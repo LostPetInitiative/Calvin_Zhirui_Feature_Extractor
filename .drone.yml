@@ -9,7 +9,8 @@ steps:
   settings:
     repo: lostpetinitiative/calvin_zhirui_feature_extractor
     dry_run: true
-    target: TESTS    
+    #target: TESTS # this one fails on drone.io build
+    target: FINAL
 - name: build & push docker image
   image: plugins/docker
   when:

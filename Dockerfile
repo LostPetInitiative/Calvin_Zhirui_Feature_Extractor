@@ -6,10 +6,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates
 RUN mkdir /app
 # downloading pretrained weights from Zenodo
 RUN wget https://zenodo.org/record/6663662/files/head_swin_bnneck.zip -nv -O /app/head_swin_bnneck.zip
-RUN unzip /app/head_swin_bnneck.zip -d /app/head_swin_bnneck
+RUN unzip /app/head_swin_bnneck.zip model.ckpt cfg.yml -d /app/head_swin_bnneck
 RUN rm /app/head_swin_bnneck.zip
-# last.ckpt is the same as model.ckpt, so deleting it to save image space
-RUN rm /app/head_swin_bnneck/last.ckpt
 
 FROM python:3.9-slim AS FINAL
 
