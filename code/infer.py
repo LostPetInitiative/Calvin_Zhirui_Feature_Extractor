@@ -5,6 +5,7 @@ from pathlib import Path, WindowsPath, PurePath
 import torch
 from torch.utils.data import DataLoader
 import yaml
+import cv2
 import numpy as np
 from easydict import EasyDict
 
@@ -44,29 +45,33 @@ def load_pretrained_model(ckpt, device="cuda:0"):
     model, config = load_ckpt(ckpt, device)
     print("Model loaded")
     model.eval()
-    return model
+    return model, config
 
 @torch.inference_mode()
-def get_embeddings(model, images):    
-    embeddings = []
-    for image in images:
-        #  image = cv2.cvtColor(cv2.imread(self.image_path[item]), cv2.COLOR_BGR2RGB)
-        # if self.transform:
-        # get_infer_transform...
-        #    image = self.transform(image=image)['image']
-        # rst["images"]
-        # batch = {k: torch.tensor(v).to(device) for k, v in data.items()}
-        embedding = model(image).cpu().numpy()
-        embeddings.append(embedding)
+def get_embedding(model, image):    
+    #  image = cv2.cvtColor(cv2.imread(self.image_path[item]), cv2.COLOR_BGR2RGB)
+    # if self.transform:
+    # get_infer_transform...
+    #    image = self.transform(image=image)['image']
+    # rst["images"]
+    # batch = {k: torch.tensor(v).to(device) for k, v in data.items()}
+    print(f"image shape: {image.shape}")
+    
+    embedding = model(image).cpu().numpy()
     #embeddings = np.vstack(embeddings)
     # embeddings = normalize(embeddings, axis=1, norm="l2")
-    print(f"embeddings size {embeddings.shape}")    
-    return embeddings
+    
+    print(f"embedding size {embedding.shape}")    
+    return embedding
 
-def get_embedding_for_json(model, serialized_image):
+def get_embedding_for_json(model, preproc_transform, serialized_image):
     # TODO: avoid wrapping with list
     npImage = kafkajobs.serialization.imagesFieldToNp([serialized_image])[0]
-    return npImage
+    npImage = preproc_transform(image=npImage)['image']
+    # adding batch dimension
+    npImage = npImage[np.newaxis, ...]
+    embeddings = get_embedding(model, npImage)
+    return embeddings
 
 
 #def run_predict(save_dir, data_dir, model, filt=None, device='cuda:0'):   
