@@ -33,7 +33,9 @@ class EmbeddingsTest(unittest.TestCase):
 
         output_job = infer.process_job(model, preproc_transform, job)
 
-        assert json.dumps(expected_output) == json.dumps(output_job)
+        exp_json = json.dumps(expected_output)
+        actual_json = json.dumps(output_job)
+        assert exp_json == actual_json, f"Output job does not match expected output {exp_json} {actual_json}"
         assert "yolo5_output" not in output_job
     
         
