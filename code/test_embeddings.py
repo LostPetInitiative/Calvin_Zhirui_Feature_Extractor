@@ -1,5 +1,4 @@
 
-from socket import J1939_NLA_BYTES_ACKED
 import unittest
 import json
 
